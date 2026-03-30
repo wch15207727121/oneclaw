@@ -7,6 +7,7 @@ name: Publish Release
 on:
   release:
     types: [published]
+  workflow_dispatch: 
 
 env:
   CDN_DOMAIN: oneclaw.cn
