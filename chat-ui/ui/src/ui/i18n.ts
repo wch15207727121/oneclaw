@@ -1,5 +1,5 @@
 /**
- * Minimal i18n module for OneClaw Chat UI.
+ * Minimal i18n module for RunJianClaw Chat UI.
  * ~25 string keys, Chinese / English.
  * Language detection: navigator.language or ?lang= URL param.
  */
@@ -9,10 +9,10 @@ export type Locale = "zh" | "en";
 const dict: Record<Locale, Record<string, string>> = {
   zh: {
     // App
-    "app.windowTitle": "OneClaw 一键安装OpenClaw",
+    "app.windowTitle": "RunJianClaw 一键安装OpenClaw",
 
     // Sidebar
-    "sidebar.brand": "OneClaw",
+    "sidebar.brand": "RunJianClaw",
     "sidebar.newChat": "新建对话",
     "sidebar.settings": "设置",
     "sidebar.docs": "教程文档",
@@ -138,7 +138,7 @@ const dict: Record<Locale, Record<string, string>> = {
     "feedback.success": "已提交，感谢反馈",
     "feedback.error": "提交失败，请重试",
 
-    // OneClaw settings page
+    // RunJianClaw settings page
     "settings.title": "设置",
     "settings.subtitle": "管理外观显示与聊天展示偏好",
     "settings.backToChat": "返回对话",
@@ -170,7 +170,7 @@ const dict: Record<Locale, Record<string, string>> = {
     "chat.thinkingOff": "思考已关闭",
 
     // Share prompt
-    "sharePrompt.title": "分享 OneClaw 给朋友",
+    "sharePrompt.title": "分享 RunJianClaw 给朋友",
     "sharePrompt.subtitle": "复制下面这段文案分享给你的朋友或群聊，作者会非常感谢你哟😘",
     "sharePrompt.copy": "复制文案",
     "sharePrompt.copied": "已复制",
@@ -202,10 +202,10 @@ const dict: Record<Locale, Record<string, string>> = {
   },
   en: {
     // App
-    "app.windowTitle": "OneClaw - One-click installer for OpenClaw",
+    "app.windowTitle": "RunJianClaw - One-click installer for OpenClaw",
 
     // Sidebar
-    "sidebar.brand": "OneClaw",
+    "sidebar.brand": "RunJianClaw",
     "sidebar.newChat": "New Chat",
     "sidebar.settings": "Settings",
     "sidebar.docs": "Docs",
@@ -331,7 +331,7 @@ const dict: Record<Locale, Record<string, string>> = {
     "feedback.success": "Submitted, thank you",
     "feedback.error": "Failed to submit, please try again",
 
-    // OneClaw settings page
+    // RunJianClaw settings page
     "settings.title": "Settings",
     "settings.subtitle": "Manage appearance and chat display preferences",
     "settings.backToChat": "Back to chat",
@@ -364,7 +364,7 @@ const dict: Record<Locale, Record<string, string>> = {
     "chat.thinkingOff": "Thinking disabled",
 
     // Share prompt
-    "sharePrompt.title": "Share OneClaw with friends",
+    "sharePrompt.title": "Share RunJianClaw with friends",
     "sharePrompt.subtitle":
       "Copy this text and share it with your friends or group chats. The creator will really appreciate it 😘",
     "sharePrompt.copy": "Copy text",

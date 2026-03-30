@@ -19,7 +19,7 @@ export class SetupManager {
     // 标题本地化 + 多实例分支标识
     const lang = app.getLocale().startsWith("zh") ? "zh" : "en";
     const tag = resolveDevBranchTag();
-    const title = lang === "zh" ? `OneClaw 安装引导${tag}` : `OneClaw Setup${tag}`;
+    const title = lang === "zh" ? `RunJianClaw 安装引导${tag}` : `RunJianClaw Setup${tag}`;
 
     this.setupWin = new BrowserWindow({
       width: 580,

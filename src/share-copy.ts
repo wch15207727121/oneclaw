@@ -15,7 +15,7 @@ export type ShareCopyPayload = {
 };
 
 const SHARE_COPY_JSON_PATH = path.resolve(__dirname, "../settings/share-copy-content.json");
-const REMOTE_SHARE_COPY_URL = "https://oneclaw.cn/config/share-copy-content.json";
+const REMOTE_SHARE_COPY_URL = "https://RunJianClaw.cn/config/share-copy-content.json";
 const REMOTE_FETCH_TIMEOUT_MS = 4000;
 const REMOTE_CACHE_TTL_MS = 5 * 60 * 1000;
 
@@ -27,12 +27,12 @@ const FALLBACK_SHARE_COPY_PAYLOAD: ShareCopyPayload = {
   version: 1,
   locales: {
     zh: {
-      title: "分享 OneClaw 给朋友",
+      title: "分享 RunJianClaw 给朋友",
       subtitle: "复制下面这段文案分享给你的朋友或群聊，作者会非常感谢你哟😘",
       body: [
-        "我最近在用 OneClaw，很快就安装好了 OpenClaw。",
+        "我最近在用 RunJianClaw，很快就安装好了 OpenClaw。",
         "",
-        "OneClaw 是 OpenClaw 的一键安装包，几分钟就能装好并开始用。",
+        "RunJianClaw 是 OpenClaw 的一键安装包，几分钟就能装好并开始用。",
         "",
         "他们说 OpenClaw 可以做这些事：",
         "• 浏览器操作：自动搜索浏览、定时信息抓取、处理汇总",
@@ -41,17 +41,17 @@ const FALLBACK_SHARE_COPY_PAYLOAD: ShareCopyPayload = {
         "• 办公自动化：批量处理邮件、简历筛选、填写表单",
         "• 会议助手：会前整理文件制作 PPT、会后快速生成纪要",
         "",
-        "想低成本把内容、运营、办公、招聘自动化，可以直接试试：oneclaw.cn",
+        "想低成本把内容、运营、办公、招聘自动化，可以直接试试：RunJianClaw.cn",
       ].join("\n"),
     },
     en: {
-      title: "Share OneClaw with friends",
+      title: "Share RunJianClaw with friends",
       subtitle:
         "Copy this text and share it with your friends or group chats. The creator will really appreciate it 😘",
       body: [
-        "I've been using OneClaw lately, and it seriously boosts execution speed.",
+        "I've been using RunJianClaw lately, and it seriously boosts execution speed.",
         "",
-        "OneClaw is a one-click installer for OpenClaw, so you can get started in minutes.",
+        "RunJianClaw is a one-click installer for OpenClaw, so you can get started in minutes.",
         "",
         "What OpenClaw can do:",
         "• Browser automation: auto search and browsing, scheduled information capture, and summary processing",
@@ -60,7 +60,7 @@ const FALLBACK_SHARE_COPY_PAYLOAD: ShareCopyPayload = {
         "• Office automation: batch email processing, resume screening, and form filling",
         "• Meeting assistant: pre-meeting file prep + PPT generation, and fast post-meeting minutes",
         "",
-        "If you want low-cost automation for content, operations, office, and recruiting, try: oneclaw.cn",
+        "If you want low-cost automation for content, operations, office, and recruiting, try: RunJianClaw.cn",
       ].join("\n"),
     },
   },

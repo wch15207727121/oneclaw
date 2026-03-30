@@ -1,5 +1,5 @@
 /**
- * OneClaw sidebar component.
+ * RunJianClaw sidebar component.
  * Replaces the upstream 13-tab navigation with a compact chat sidebar.
  */
 import { html } from "lit";
@@ -7,7 +7,7 @@ import { nothing } from "lit";
 import { repeat } from "lit/directives/repeat.js";
 import { t } from "./i18n.ts";
 import { icons } from "./icons.ts";
-import oneClawLogo from "../assets/openclaw-favicon.svg";
+import RunJianClawLogo from "../assets/openclaw-favicon.svg";
 
 export type SidebarProps = {
   connected: boolean;
@@ -48,7 +48,7 @@ function startInlineRename(
 ) {
   const input = document.createElement("input");
   input.type = "text";
-  input.className = "oneclaw-sidebar__session-edit";
+  input.className = "RunJianClaw-sidebar__session-edit";
   input.value = currentLabel;
   let saved = false;
   const save = () => {
@@ -103,10 +103,10 @@ export function renderSidebar(props: SidebarProps) {
     : t("sidebar.updateReady");
 
   return html`
-    <aside class="oneclaw-sidebar">
-      <div class="oneclaw-sidebar__brand">
+    <aside class="RunJianClaw-sidebar">
+      <div class="RunJianClaw-sidebar__brand">
         <button
-          class="oneclaw-sidebar__collapse"
+          class="RunJianClaw-sidebar__collapse"
           type="button"
           @click=${props.onToggleSidebar}
           data-tooltip=${t("sidebar.collapse")}
@@ -117,11 +117,11 @@ export function renderSidebar(props: SidebarProps) {
         </button>
       </div>
 
-      <nav class="oneclaw-sidebar__nav">
+      <nav class="RunJianClaw-sidebar__nav">
         <!-- Prominent New Chat Button -->
         <div style="padding: 12px 14px 16px;">
           <button
-            class="oneclaw-sidebar__new-chat-btn"
+            class="RunJianClaw-sidebar__new-chat-btn"
             @click=${props.onNewChat}
           >
             ${icons.messagePlus} ${t("sidebar.newChat")}
@@ -129,12 +129,12 @@ export function renderSidebar(props: SidebarProps) {
         </div>
 
         <!-- 会话列表标题行 -->
-        <div class="oneclaw-sidebar__session-header">
-          <span class="oneclaw-sidebar__section-title">${t("sidebar.agent")}</span>
+        <div class="RunJianClaw-sidebar__session-header">
+          <span class="RunJianClaw-sidebar__section-title">${t("sidebar.agent")}</span>
         </div>
 
         <!-- 会话列表 -->
-        <div class="oneclaw-sidebar__session-list">
+        <div class="RunJianClaw-sidebar__session-list">
           ${repeat(
             props.sessionOptions,
             (s) => s.key,
@@ -142,20 +142,20 @@ export function renderSidebar(props: SidebarProps) {
               const isActive = s.key === props.currentSessionKey;
               return html`
                 <div
-                  class="oneclaw-sidebar__session-item ${isActive ? "active" : ""}"
+                  class="RunJianClaw-sidebar__session-item ${isActive ? "active" : ""}"
                   @click=${() => props.onSelectSession(s.key)}
                 >
                   <span
-                    class="oneclaw-sidebar__session-name"
+                    class="RunJianClaw-sidebar__session-name"
                     title=${s.label}
                   >${s.label}</span>
                   <button
-                    class="oneclaw-sidebar__session-action"
+                    class="RunJianClaw-sidebar__session-action"
                     type="button"
                     @click=${(e: Event) => {
                       e.stopPropagation();
-                      const item = (e.currentTarget as HTMLElement).closest(".oneclaw-sidebar__session-item")!;
-                      const span = item.querySelector(".oneclaw-sidebar__session-name") as HTMLSpanElement;
+                      const item = (e.currentTarget as HTMLElement).closest(".RunJianClaw-sidebar__session-item")!;
+                      const span = item.querySelector(".RunJianClaw-sidebar__session-name") as HTMLSpanElement;
                       startInlineRename(span, s.key, s.label, props.onRenameSession);
                     }}
                     data-tooltip=${t("sidebar.rename")}
@@ -164,7 +164,7 @@ export function renderSidebar(props: SidebarProps) {
                     ${icons.edit}
                   </button>
                   <button
-                    class="oneclaw-sidebar__session-action"
+                    class="RunJianClaw-sidebar__session-action"
                     type="button"
                     @click=${(e: Event) => {
                       e.stopPropagation();
@@ -182,11 +182,11 @@ export function renderSidebar(props: SidebarProps) {
         </div>
       </nav>
 
-      <div class="oneclaw-sidebar__footer">
+      <div class="RunJianClaw-sidebar__footer">
         ${showUpdateAction
           ? html`
               <button
-                class="oneclaw-sidebar__item oneclaw-sidebar__item--update ${props.updateStatus === "downloading"
+                class="RunJianClaw-sidebar__item RunJianClaw-sidebar__item--update ${props.updateStatus === "downloading"
                   ? "is-loading"
                   : ""}"
                 type="button"
@@ -194,113 +194,113 @@ export function renderSidebar(props: SidebarProps) {
                 data-tooltip=${props.updateVersion ? `${updateLabel} (${props.updateVersion})` : updateLabel}
                 ?disabled=${props.updateStatus === "downloading"}
               >
-                <span class="oneclaw-sidebar__icon">
+                <span class="RunJianClaw-sidebar__icon">
                   ${props.updateStatus === "downloading" ? icons.loader : icons.zap}
                 </span>
-                <span class="oneclaw-sidebar__label">${updateLabel}</span>
+                <span class="RunJianClaw-sidebar__label">${updateLabel}</span>
                 ${props.updateShowBadge
-                  ? html`<span class="oneclaw-sidebar__update-dot" aria-hidden="true"></span>`
+                  ? html`<span class="RunJianClaw-sidebar__update-dot" aria-hidden="true"></span>`
                   : nothing}
               </button>
             `
           : nothing}
         <button
-          class="oneclaw-sidebar__item oneclaw-sidebar__item--settings ${props.settingsActive
+          class="RunJianClaw-sidebar__item RunJianClaw-sidebar__item--settings ${props.settingsActive
             ? "active"
             : ""}"
           type="button"
           @click=${props.onOpenSettings}
           data-tooltip=${t("sidebar.settings")}
         >
-          <span class="oneclaw-sidebar__icon">${icons.settings}</span>
-          <span class="oneclaw-sidebar__label">${t("sidebar.settings")}</span>
+          <span class="RunJianClaw-sidebar__icon">${icons.settings}</span>
+          <span class="RunJianClaw-sidebar__label">${t("sidebar.settings")}</span>
           ${props.settingsBadge
-            ? html`<span class="oneclaw-sidebar__badge oneclaw-sidebar__badge--new">${t("sidebar.weixinBadge")}</span>`
+            ? html`<span class="RunJianClaw-sidebar__badge RunJianClaw-sidebar__badge--new">${t("sidebar.weixinBadge")}</span>`
             : nothing}
         </button>
 
         <button
-          class="oneclaw-sidebar__item ${props.skillsActive ? "active" : ""}"
+          class="RunJianClaw-sidebar__item ${props.skillsActive ? "active" : ""}"
           type="button"
           @click=${props.onOpenSkillStore}
           data-tooltip=${t("sidebar.skillStore")}
         >
-          <span class="oneclaw-sidebar__icon">${icons.puzzle}</span>
-          <span class="oneclaw-sidebar__label">${t("sidebar.skillStore")}</span>
+          <span class="RunJianClaw-sidebar__icon">${icons.puzzle}</span>
+          <span class="RunJianClaw-sidebar__label">${t("sidebar.skillStore")}</span>
         </button>
 
         <button
-          class="oneclaw-sidebar__item ${props.workspaceActive ? "active" : ""}"
+          class="RunJianClaw-sidebar__item ${props.workspaceActive ? "active" : ""}"
           type="button"
           @click=${props.onOpenWorkspace}
           title=${t("sidebar.workspace")}
         >
-          <span class="oneclaw-sidebar__icon">${icons.folder}</span>
-          <span class="oneclaw-sidebar__label">${t("sidebar.workspace")}</span>
+          <span class="RunJianClaw-sidebar__icon">${icons.folder}</span>
+          <span class="RunJianClaw-sidebar__label">${t("sidebar.workspace")}</span>
         </button>
 
         <button
-          class="oneclaw-sidebar__item ${props.cronActive ? "active" : ""}"
+          class="RunJianClaw-sidebar__item ${props.cronActive ? "active" : ""}"
           type="button"
           @click=${props.onOpenCron}
           data-tooltip=${t("sidebar.cron")}
         >
-          <span class="oneclaw-sidebar__icon">${icons.clock}</span>
-          <span class="oneclaw-sidebar__label">${t("sidebar.cron")}</span>
+          <span class="RunJianClaw-sidebar__icon">${icons.clock}</span>
+          <span class="RunJianClaw-sidebar__label">${t("sidebar.cron")}</span>
           ${props.cronJobCount > 0
-            ? html`<span class="oneclaw-sidebar__badge">${props.cronJobCount}</span>`
+            ? html`<span class="RunJianClaw-sidebar__badge">${props.cronJobCount}</span>`
             : nothing}
         </button>
 
         <button
-          class="oneclaw-sidebar__item"
+          class="RunJianClaw-sidebar__item"
           type="button"
           @click=${props.onOpenDocs}
           data-tooltip=${t("sidebar.docs")}
         >
-          <span class="oneclaw-sidebar__icon">${icons.book}</span>
-          <span class="oneclaw-sidebar__label">${t("sidebar.docs")}</span>
+          <span class="RunJianClaw-sidebar__icon">${icons.book}</span>
+          <span class="RunJianClaw-sidebar__label">${t("sidebar.docs")}</span>
         </button>
 
         ${props.connected
           ? html`
-            <div class="oneclaw-sidebar__reconnect-wrap">
+            <div class="RunJianClaw-sidebar__reconnect-wrap">
               <button
-                class="oneclaw-sidebar__item"
+                class="RunJianClaw-sidebar__item"
                 type="button"
                 @click=${props.onOpenWebUI}
                 data-tooltip=${t("sidebar.fullUI")}
               >
-                <span class="oneclaw-sidebar__icon">${icons.externalLink}</span>
-                <span class="oneclaw-sidebar__label">${t("sidebar.fullUI")}</span>
+                <span class="RunJianClaw-sidebar__icon">${icons.externalLink}</span>
+                <span class="RunJianClaw-sidebar__label">${t("sidebar.fullUI")}</span>
                 ${props.errors.length > 0
-                  ? html`<span class="oneclaw-sidebar__error-badge" title=${props.errors.join("\n")}>${props.errors.length}</span>`
+                  ? html`<span class="RunJianClaw-sidebar__error-badge" title=${props.errors.join("\n")}>${props.errors.length}</span>`
                   : nothing}
               </button>
               ${props.errors.length > 0
                 ? html`
-                  <div class="oneclaw-sidebar__error-popup">
-                    ${props.errors.map((msg) => html`<div class="oneclaw-sidebar__error-item">${msg}</div>`)}
+                  <div class="RunJianClaw-sidebar__error-popup">
+                    ${props.errors.map((msg) => html`<div class="RunJianClaw-sidebar__error-item">${msg}</div>`)}
                   </div>`
                 : nothing}
             </div>`
           : html`
-            <div class="oneclaw-sidebar__reconnect-wrap">
+            <div class="RunJianClaw-sidebar__reconnect-wrap">
               <button
-                class="oneclaw-sidebar__item oneclaw-sidebar__item--disconnected"
+                class="RunJianClaw-sidebar__item RunJianClaw-sidebar__item--disconnected"
                 type="button"
                 @click=${props.onReconnect}
               >
-                <span class="oneclaw-sidebar__icon">${refreshIcon}</span>
-                <span class="oneclaw-sidebar__label">${t("sidebar.reconnect")}</span>
+                <span class="RunJianClaw-sidebar__icon">${refreshIcon}</span>
+                <span class="RunJianClaw-sidebar__label">${t("sidebar.reconnect")}</span>
                 ${props.errors.length > 0
-                  ? html`<span class="oneclaw-sidebar__error-badge" title=${props.errors.join("\n")}>${props.errors.length}</span>`
+                  ? html`<span class="RunJianClaw-sidebar__error-badge" title=${props.errors.join("\n")}>${props.errors.length}</span>`
                   : nothing}
               </button>
               ${props.errors.length > 0
                 ? html`
-                  <div class="oneclaw-sidebar__error-popup">
-                    ${props.errors.map((msg) => html`<div class="oneclaw-sidebar__error-item">${msg}</div>`)}
+                  <div class="RunJianClaw-sidebar__error-popup">
+                    ${props.errors.map((msg) => html`<div class="RunJianClaw-sidebar__error-item">${msg}</div>`)}
                   </div>`
                 : nothing}
             </div>`

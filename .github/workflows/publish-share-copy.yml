@@ -8,10 +8,10 @@ on:
   workflow_dispatch:
 
 env:
-  CDN_DOMAIN: oneclaw.cn
+  CDN_DOMAIN: RunJianClaw.cn
   SHARE_COPY_OBJECT_KEY: config/share-copy-content.json
   TOS_ENDPOINT: https://tos-s3-accelerate.volces.com
-  TOS_BUCKET: oneclaw-cn
+  TOS_BUCKET: RunJianClaw-cn
   AWS_ACCESS_KEY_ID: ${{ secrets.VOLCENGINE_ACCESS_KEY }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.VOLCENGINE_SECRET_KEY }}
   AWS_DEFAULT_REGION: cn-beijing

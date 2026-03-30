@@ -56,12 +56,12 @@ const SETUP_ICONS = {
 const TARGETS = [
   {
     icons: SETTINGS_ICONS,
-    spriteId: "oneclaw-settings-icon-sprite",
+    spriteId: "RunJianClaw-settings-icon-sprite",
     output: path.join(ROOT, "settings", "lucide-sprite.generated.js"),
   },
   {
     icons: SETUP_ICONS,
-    spriteId: "oneclaw-setup-icon-sprite",
+    spriteId: "RunJianClaw-setup-icon-sprite",
     output: path.join(ROOT, "setup", "lucide-sprite.generated.js"),
   },
 ];

@@ -1,8 +1,8 @@
-# OneClaw — Electron Shell for openclaw
+# RunJianClaw — Electron Shell for openclaw
 
 ## What This Project Is
 
-OneClaw is a cross-platform desktop app that wraps the [openclaw](https://github.com/openclaw/openclaw) gateway into a standalone installable package. It ships a bundled Node.js 22 runtime and the openclaw npm package, so users need zero dev tooling — just install and run.
+RunJianClaw is a cross-platform desktop app that wraps the [openclaw](https://github.com/openclaw/openclaw) gateway into a standalone installable package. It ships a bundled Node.js 22 runtime and the openclaw npm package, so users need zero dev tooling — just install and run.
 
 **Three-process architecture:**
 
@@ -22,14 +22,14 @@ The main process spawns a gateway subprocess, waits for its health check, then o
 | Language | TypeScript → CommonJS (no ESM) |
 | Chat UI | Lit 3 + Vite (file:// loaded SPA) |
 | Packager | electron-builder 26.7.0 |
-| Updater | electron-updater (generic provider, CDN at `oneclaw.cn`) |
+| Updater | electron-updater (generic provider, CDN at `RunJianClaw.cn`) |
 | Targets | macOS DMG + ZIP (arm64/x64), Windows NSIS (x64/arm64) |
 | Version scheme | Calendar-based: `YYYY.MMDD.N` (e.g. `2026.318.0`), auto-derived from git tag |
 
 ## Repository Layout
 
 ```
-oneclaw/
+RunJianClaw/
 ├── src/                    # 35 TypeScript modules (10270 LOC) + 13 test files
 │   ├── main.ts             # App entry, lifecycle, IPC, Dock toggle, config recovery
 │   ├── constants.ts        # Path resolution (dev vs packaged vs ASAR), health check params
@@ -45,7 +45,7 @@ oneclaw/
 │   ├── setup-ipc.ts        # Setup validation + config write + CLI install
 │   ├── setup-completion.ts # Setup wizard completion detection
 │   ├── install-detector.ts # Setup Step 0: installation conflict detection
-│   ├── oneclaw-config.ts   # OneClaw ownership config (deviceId, setupCompletedAt, migration)
+│   ├── RunJianClaw-config.ts   # RunJianClaw ownership config (deviceId, setupCompletedAt, migration)
 │   ├── settings-ipc.ts     # Settings CRUD, backup/restore, Kimi, CLI, advanced
 │   ├── config-backup.ts    # Rolling backups + last-known-good snapshot + restore
 │   ├── share-copy.ts       # Remote share copy content (CDN fetch + local fallback)
@@ -131,7 +131,7 @@ npm run clean                # Remove all generated files
 
 **Full build pipeline** (what `dist:mac:arm64` does):
 
-1. `package:resources` — download Node.js 22, `npm install openclaw --production --install-links` (version auto-fetched from npm), optionally create `gateway.asar` (set `ONECLAW_GATEWAY_ASAR=1`)
+1. `package:resources` — download Node.js 22, `npm install openclaw --production --install-links` (version auto-fetched from npm), optionally create `gateway.asar` (set `RunJianClaw_GATEWAY_ASAR=1`)
 2. `build:chat` — Vite builds Lit Chat UI into `chat-ui/dist/`
 3. `tsc` — compile TypeScript
 4. `electron-builder` → `afterPack.js` injects `resources/targets/<target>/` into app bundle → DMG/ZIP/NSIS
@@ -153,7 +153,7 @@ npm run clean                # Remove all generated files
 - **Skill store** — clawhub CLI integration, skills at `~/.openclaw/workspace/skills/`, registry config in `~/.openclaw/skill-store.json`.
 - **Config backup** — Rolling 10 backups + last-known-good snapshot + factory reset.
 - **Multi-model management** — IPC handlers for listing, deleting, setting default, and aliasing models across providers.
-- **Gateway ASAR packaging** — Optional `gateway.asar` archive (enabled by `ONECLAW_GATEWAY_ASAR=1`) reduces 5000+ files to a single archive for faster Windows installs. Patched openclaw boundary check for ASAR paths. Extensions unpacked to `gateway.asar.unpacked/`.
+- **Gateway ASAR packaging** — Optional `gateway.asar` archive (enabled by `RunJianClaw_GATEWAY_ASAR=1`) reduces 5000+ files to a single archive for faster Windows installs. Patched openclaw boundary check for ASAR paths. Extensions unpacked to `gateway.asar.unpacked/`.
 - **Preload security** — ~75 IPC methods + 5 event listeners via `contextBridge` (sandbox mode).
 
 ## Runtime Paths (on user's machine)
@@ -161,7 +161,7 @@ npm run clean                # Remove all generated files
 ```
 ~/.openclaw/
   ├── openclaw.json                    # User config (provider, model, auth token, channels)
-  ├── oneclaw.config.json              # OneClaw ownership marker (deviceId, setupCompletedAt)
+  ├── RunJianClaw.config.json              # RunJianClaw ownership marker (deviceId, setupCompletedAt)
   ├── openclaw.last-known-good.json    # Last successful gateway startup config snapshot
   ├── .device-id                       # Analytics device ID (UUID)
   ├── app.log                          # Application log (5MB truncate)
@@ -205,7 +205,7 @@ For comprehensive design guidelines, please refer to:
 
 5. **Tray app behavior.** Closing the window hides it; the app stays in the tray. `Cmd+Q` (or Quit from tray menu) actually quits. macOS Dock icon hides automatically when no windows are visible.
 
-6. **macOS signing.** By default uses ad-hoc identity (`-`). Set `ONECLAW_MAC_SIGN_AND_NOTARIZE=true` + `CSC_NAME`, `APPLE_API_KEY`, `APPLE_API_KEY_ID`, `APPLE_API_ISSUER` in `.env` for real signing.
+6. **macOS signing.** By default uses ad-hoc identity (`-`). Set `RunJianClaw_MAC_SIGN_AND_NOTARIZE=true` + `CSC_NAME`, `APPLE_API_KEY`, `APPLE_API_KEY_ID`, `APPLE_API_ISSUER` in `.env` for real signing.
 
 7. **Version is auto-derived from git tag.** Format: `YYYY.MMDD.N` (e.g. `v2026.318.0`). `package.json` stays `0.0.0-dev`; CI extracts version from tag via `npm version`. Never manually edit `package.json` version.
 
@@ -219,7 +219,7 @@ For comprehensive design guidelines, please refer to:
 
 12. **Gateway entry fallback.** `resolveGatewayEntry()` tries `openclaw.mjs` first (new packages), then falls back to `gateway-entry.mjs` (legacy). Both paths must be considered during packaging verification.
 
-13. **CLI wrapper uses RC block markers.** Install/uninstall is idempotent via `# >>> oneclaw-cli >>>` / `# <<< oneclaw-cli <<<` markers in shell profiles. Always check for marker presence before modifying.
+13. **CLI wrapper uses RC block markers.** Install/uninstall is idempotent via `# >>> RunJianClaw-cli >>>` / `# <<< RunJianClaw-cli <<<` markers in shell profiles. Always check for marker presence before modifying.
 
 14. **Kimi Search API key is a sidecar file**, not in `openclaw.json`. Stored at `~/.openclaw/credentials/kimi-search-api-key`. Auto-reuses kimi-code provider key if no dedicated key exists.
 
@@ -227,9 +227,9 @@ For comprehensive design guidelines, please refer to:
 
 16. **Gateway port is configurable.** Resolution order: env `OPENCLAW_GATEWAY_PORT` > config `gateway.port` in `openclaw.json` > default `18789`. Don't hardcode port numbers — use `resolveGatewayPort()` from `constants.ts`.
 
-17. **Gateway npm update check is disabled.** OneClaw writes `update.checkOnStart = false` to the gateway config at startup. The gateway cannot self-update inside a packaged Electron app.
+17. **Gateway npm update check is disabled.** RunJianClaw writes `update.checkOnStart = false` to the gateway config at startup. The gateway cannot self-update inside a packaged Electron app.
 
-18. **`oneclaw.config.json` is the ownership marker.** OneClaw uses this file to detect config ownership at startup. Detection flow: `oneclaw.config.json` exists → normal startup; `.device-id` exists → legacy migration; `openclaw.json` exists without marker → external OpenClaw takeover; nothing → fresh Setup. Do not delete this file manually.
+18. **`RunJianClaw.config.json` is the ownership marker.** RunJianClaw uses this file to detect config ownership at startup. Detection flow: `RunJianClaw.config.json` exists → normal startup; `.device-id` exists → legacy migration; `openclaw.json` exists without marker → external OpenClaw takeover; nothing → fresh Setup. Do not delete this file manually.
 
 19. **Skill store config is standalone.** Registry URL stored in `~/.openclaw/skill-store.json`, not in gateway config. Skills installed to `~/.openclaw/workspace/skills/`, not `~/.openclaw/skills/`.
 
@@ -245,6 +245,6 @@ For comprehensive design guidelines, please refer to:
 
 25. **Windows uses assisted installer.** NSIS `oneClick: false` mode enables installation directory selection and custom uninstall options. `installer.nsh` provides CLI cleanup and user data removal checkboxes. `createDesktopShortcut: "always"` ensures shortcut is recreated on update.
 
-26. **Windows CLI wrapper lives in `%LOCALAPPDATA%\OneClaw\bin\`.** Not in `~/.openclaw/bin/` like POSIX. Legacy path migration handles old users who had wrappers in `~/.openclaw/bin/`.
+26. **Windows CLI wrapper lives in `%LOCALAPPDATA%\RunJianClaw\bin\`.** Not in `~/.openclaw/bin/` like POSIX. Legacy path migration handles old users who had wrappers in `~/.openclaw/bin/`.
 
 27. **Client-side polling uses shared ticker.** All periodic polling in Chat UI must go through the 60s `client-ticker.ts` mechanism (`registerTickHandler`/`unregisterTickHandler`). Do not create standalone `setInterval` calls. See [docs/client-ticker.md](docs/client-ticker.md).

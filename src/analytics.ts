@@ -2,7 +2,7 @@ import { app } from "electron";
 import * as fs from "fs";
 import * as path from "path";
 import { resolveResourcesPath } from "./constants";
-import { ensureDeviceId } from "./oneclaw-config";
+import { ensureDeviceId } from "./RunJianClaw-config";
 import * as log from "./logger";
 import {
   AnalyticsErrorType,
@@ -55,7 +55,7 @@ let deviceId = "";
 let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
 let resolvedConfigPath = "";
 
-// 读取或生成持久化 device ID（委托给 oneclaw-config 统一管理）
+// 读取或生成持久化 device ID（委托给 RunJianClaw-config 统一管理）
 function getDeviceId(): string {
   return ensureDeviceId();
 }

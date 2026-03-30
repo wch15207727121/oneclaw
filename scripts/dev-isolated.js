@@ -76,7 +76,7 @@ if (fs.existsSync(gitignorePath)) {
 
 const env = {
   ...process.env,
-  ONECLAW_MULTI_INSTANCE: "1",
+  RunJianClaw_MULTI_INSTANCE: "1",
   OPENCLAW_STATE_DIR: stateDir,
   OPENCLAW_GATEWAY_PORT: String(port),
 };

@@ -1,4 +1,4 @@
-import { readOneclawConfig } from "./oneclaw-config";
+import { readRunJianClawConfig } from "./RunJianClaw-config";
 
 // 旧逻辑保留：检查 openclaw.json 的 wizard.lastRunAt（gateway schema 兼容）
 export function isSetupCompleteFromConfig(config: any): boolean {
@@ -16,8 +16,8 @@ export function isSetupCompleteFromConfig(config: any): boolean {
   );
 }
 
-// 基于 oneclaw.config.json 判定 Setup 是否完成
-export function isOneclawSetupComplete(): boolean {
-  const config = readOneclawConfig();
+// 基于 RunJianClaw.config.json 判定 Setup 是否完成
+export function isRunJianClawSetupComplete(): boolean {
+  const config = readRunJianClawConfig();
   return !!(config?.setupCompletedAt);
 }

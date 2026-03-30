@@ -1,7 +1,7 @@
 /**
  * package-resources.js
  *
- * OneClaw Electron 应用资源打包脚本
+ * RunJianClaw Electron 应用资源打包脚本
  * 负责下载 Node.js 运行时、安装 openclaw 生产依赖、生成统一入口
  *
  * 用法: node scripts/package-resources.js [--platform darwin|win32] [--arch arm64|x64] [--locale en|cn]
@@ -57,7 +57,7 @@ function parseArgs() {
     platform: process.platform,
     arch: process.platform === "win32" ? "x64" : "arm64",
     locale: "en",
-    asar: process.env.ONECLAW_GATEWAY_ASAR === "1",
+    asar: process.env.RunJianClaw_GATEWAY_ASAR === "1",
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -477,11 +477,11 @@ function readEnvRetryDelays(name, fallback) {
 }
 
 function buildAnalyticsConfig() {
-  const captureURL = readEnvText("ONECLAW_ANALYTICS_CAPTURE_URL");
-  const captureFallbackURL = readEnvText("ONECLAW_ANALYTICS_CAPTURE_FALLBACK_URL") || captureURL;
-  const apiKey = readEnvText("ONECLAW_ANALYTICS_API_KEY");
-  const requestTimeoutMs = readEnvPositiveInt("ONECLAW_ANALYTICS_REQUEST_TIMEOUT_MS", 8000);
-  const retryDelaysMs = readEnvRetryDelays("ONECLAW_ANALYTICS_RETRY_DELAYS_MS", [0, 500, 1500]);
+  const captureURL = readEnvText("RunJianClaw_ANALYTICS_CAPTURE_URL");
+  const captureFallbackURL = readEnvText("RunJianClaw_ANALYTICS_CAPTURE_FALLBACK_URL") || captureURL;
+  const apiKey = readEnvText("RunJianClaw_ANALYTICS_API_KEY");
+  const requestTimeoutMs = readEnvPositiveInt("RunJianClaw_ANALYTICS_REQUEST_TIMEOUT_MS", 8000);
+  const retryDelaysMs = readEnvRetryDelays("RunJianClaw_ANALYTICS_RETRY_DELAYS_MS", [0, 500, 1500]);
   const enabled = captureURL.length > 0 && apiKey.length > 0;
 
   if (!enabled) {
@@ -507,7 +507,7 @@ function buildAnalyticsConfig() {
 
 function writeBuildConfig(configPath) {
   const analytics = buildAnalyticsConfig();
-  const clawhubRegistry = readEnvText("ONECLAW_CLAWHUB_REGISTRY");
+  const clawhubRegistry = readEnvText("RunJianClaw_CLAWHUB_REGISTRY");
   const config = { analytics, clawhubRegistry };
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
   log(`已生成 build-config.json（analytics.enabled=${analytics.enabled ? "true" : "false"}, clawhubRegistry=${clawhubRegistry || "(空)"}）`);
@@ -527,12 +527,12 @@ function getPackageSource() {
     };
   }
 
-  // 优先级 2: package.json oneclaw.openclaw 字段（git-tracked 单一事实来源）
+  // 优先级 2: package.json RunJianClaw.openclaw 字段（git-tracked 单一事实来源）
   try {
     const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, "package.json"), "utf8"));
-    const pinnedVersion = pkg.oneclaw?.openclaw;
+    const pinnedVersion = pkg.RunJianClaw?.openclaw;
     if (pinnedVersion) {
-      log(`使用 openclaw@${pinnedVersion}（来源: package.json oneclaw.openclaw）`);
+      log(`使用 openclaw@${pinnedVersion}（来源: package.json RunJianClaw.openclaw）`);
       return {
         source: pinnedVersion,
         stampSource: `pinned:openclaw@${pinnedVersion}`,
@@ -543,7 +543,7 @@ function getPackageSource() {
   }
 
   // 优先级 3: npm latest（带警告）
-  log("⚠️  未在 package.json oneclaw.openclaw 中锁定版本，将使用 npm latest");
+  log("⚠️  未在 package.json RunJianClaw.openclaw 中锁定版本，将使用 npm latest");
   const latestVersion = readRemoteLatestVersion("openclaw", {
     cwd: ROOT,
     env: process.env,
@@ -553,7 +553,7 @@ function getPackageSource() {
   });
 
   if (!latestVersion) {
-    die("无法从 npm 获取 openclaw 最新版本（检查网络或在 package.json oneclaw.openclaw 中指定版本）");
+    die("无法从 npm 获取 openclaw 最新版本（检查网络或在 package.json RunJianClaw.openclaw 中指定版本）");
   }
 
   log(`使用 openclaw@${latestVersion}（来源: npm latest）`);
@@ -563,7 +563,7 @@ function getPackageSource() {
   };
 }
 
-// 通用插件版本解析：env 覆盖 → package.json oneclaw.{key} pin → npm latest
+// 通用插件版本解析：env 覆盖 → package.json RunJianClaw.{key} pin → npm latest
 function resolveBundledPluginSource({ packageName, envKey, pkgJsonKey }) {
   const explicitSource = readEnvText(envKey);
   if (explicitSource) {
@@ -574,9 +574,9 @@ function resolveBundledPluginSource({ packageName, envKey, pkgJsonKey }) {
   if (pkgJsonKey) {
     try {
       const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, "package.json"), "utf8"));
-      const pinned = pkg.oneclaw?.[pkgJsonKey];
+      const pinned = pkg.RunJianClaw?.[pkgJsonKey];
       if (pinned) {
-        log(`使用 ${packageName}@${pinned}（来源: package.json oneclaw.${pkgJsonKey}）`);
+        log(`使用 ${packageName}@${pinned}（来源: package.json RunJianClaw.${pkgJsonKey}）`);
         return { source: pinned, stampSource: `pinned:${packageName}@${pinned}` };
       }
     } catch {}
@@ -593,16 +593,16 @@ function resolveBundledPluginSource({ packageName, envKey, pkgJsonKey }) {
 }
 
 function getQqbotPackageSource() {
-  return resolveBundledPluginSource({ packageName: QQBOT_PACKAGE_NAME, envKey: "ONECLAW_QQBOT_PACKAGE_SOURCE", pkgJsonKey: "qqbot" });
+  return resolveBundledPluginSource({ packageName: QQBOT_PACKAGE_NAME, envKey: "RunJianClaw_QQBOT_PACKAGE_SOURCE", pkgJsonKey: "qqbot" });
 }
 function getDingtalkConnectorPackageSource() {
-  return resolveBundledPluginSource({ packageName: DINGTALK_CONNECTOR_PACKAGE_NAME, envKey: "ONECLAW_DINGTALK_CONNECTOR_PACKAGE_SOURCE", pkgJsonKey: "dingtalkConnector" });
+  return resolveBundledPluginSource({ packageName: DINGTALK_CONNECTOR_PACKAGE_NAME, envKey: "RunJianClaw_DINGTALK_CONNECTOR_PACKAGE_SOURCE", pkgJsonKey: "dingtalkConnector" });
 }
 function getWecomPluginPackageSource() {
-  return resolveBundledPluginSource({ packageName: WECOM_PLUGIN_PACKAGE_NAME, envKey: "ONECLAW_WECOM_PLUGIN_PACKAGE_SOURCE", pkgJsonKey: "wecom" });
+  return resolveBundledPluginSource({ packageName: WECOM_PLUGIN_PACKAGE_NAME, envKey: "RunJianClaw_WECOM_PLUGIN_PACKAGE_SOURCE", pkgJsonKey: "wecom" });
 }
 function getWeixinPluginPackageSource() {
-  return resolveBundledPluginSource({ packageName: WEIXIN_PLUGIN_PACKAGE_NAME, envKey: "ONECLAW_WEIXIN_PLUGIN_PACKAGE_SOURCE", pkgJsonKey: "weixin" });
+  return resolveBundledPluginSource({ packageName: WEIXIN_PLUGIN_PACKAGE_NAME, envKey: "RunJianClaw_WEIXIN_PLUGIN_PACKAGE_SOURCE", pkgJsonKey: "weixin" });
 }
 
 // 读取 gateway 依赖平台戳
@@ -677,16 +677,16 @@ function pruneDarwinUniversalNativePackages(nmDir, platform) {
   }
 }
 
-// 是否保留 node-llama-cpp（默认移除；设置 ONECLAW_KEEP_LLAMA=true/1 可保留）
+// 是否保留 node-llama-cpp（默认移除；设置 RunJianClaw_KEEP_LLAMA=true/1 可保留）
 function shouldKeepLlamaPackages() {
-  const raw = readEnvText("ONECLAW_KEEP_LLAMA").toLowerCase();
+  const raw = readEnvText("RunJianClaw_KEEP_LLAMA").toLowerCase();
   return raw === "1" || raw === "true" || raw === "yes";
 }
 
 // 定点裁剪 llama 相关依赖，避免 --omit=optional 误伤其它可选功能
 function pruneLlamaPackages(nmDir) {
   if (shouldKeepLlamaPackages()) {
-    log("已保留 llama 依赖（ONECLAW_KEEP_LLAMA 已启用）");
+    log("已保留 llama 依赖（RunJianClaw_KEEP_LLAMA 已启用）");
     return;
   }
 
@@ -1111,9 +1111,9 @@ function patchAsarBoundaryCheck(gatewayDir) {
 const BUNDLED_PLUGINS = [
   {
     id: "kimi-claw",
-    localEnv: "ONECLAW_KIMI_CLAW_TGZ_PATH",
-    urlEnv: "ONECLAW_KIMI_CLAW_TGZ_URL",
-    refreshEnv: "ONECLAW_KIMI_CLAW_REFRESH",
+    localEnv: "RunJianClaw_KIMI_CLAW_TGZ_PATH",
+    urlEnv: "RunJianClaw_KIMI_CLAW_TGZ_URL",
+    refreshEnv: "RunJianClaw_KIMI_CLAW_REFRESH",
     defaultURL: KIMI_CLAW_DEFAULT_TGZ_URL,
     cacheFile: KIMI_CLAW_CACHE_FILE,
     // 校验解压产物必须包含的文件
@@ -1122,9 +1122,9 @@ const BUNDLED_PLUGINS = [
   },
   {
     id: "kimi-search",
-    localEnv: "ONECLAW_KIMI_SEARCH_TGZ_PATH",
-    urlEnv: "ONECLAW_KIMI_SEARCH_TGZ_URL",
-    refreshEnv: "ONECLAW_KIMI_SEARCH_REFRESH",
+    localEnv: "RunJianClaw_KIMI_SEARCH_TGZ_PATH",
+    urlEnv: "RunJianClaw_KIMI_SEARCH_TGZ_URL",
+    refreshEnv: "RunJianClaw_KIMI_SEARCH_REFRESH",
     defaultURL: KIMI_SEARCH_DEFAULT_TGZ_URL,
     cacheFile: KIMI_SEARCH_CACHE_FILE,
     requiredFiles: ["package.json", "openclaw.plugin.json"],
@@ -1155,7 +1155,7 @@ const BUNDLED_PLUGINS = [
   },
 ];
 
-// openclaw/skills 只保留 OneClaw 产品需要的内置技能，上游新增 skill 不会自动打入。
+// openclaw/skills 只保留 RunJianClaw 产品需要的内置技能，上游新增 skill 不会自动打入。
 const OPENCLAW_SKILLS_ALLOWLIST = new Set([
   "canvas",
   "clawhub",
@@ -1181,7 +1181,7 @@ const OPENCLAW_SKILLS_DARWIN_ONLY = new Set([
   "peekaboo",
 ]);
 
-// openclaw/extensions 只保留 OneClaw 当前产品面和运行时基础插件。
+// openclaw/extensions 只保留 RunJianClaw 当前产品面和运行时基础插件。
 const OPENCLAW_EXTENSION_ALLOWLIST = new Set([
   "shared",
   "memory-core",
@@ -1307,7 +1307,7 @@ async function bundleNpmPackagePlugin(plugin, gatewayDir, targetId, opts) {
   const sourceInfo = plugin.getSource();
 
   // 增量检测：版本戳匹配则跳过
-  const stampPath = path.join(pluginDir, `.oneclaw-${plugin.id}-stamp.json`);
+  const stampPath = path.join(pluginDir, `.RunJianClaw-${plugin.id}-stamp.json`);
   if (fs.existsSync(stampPath) && fs.existsSync(pluginDir)) {
     try {
       const stamp = JSON.parse(fs.readFileSync(stampPath, "utf-8"));
@@ -1410,7 +1410,7 @@ async function bundleNpmPackagePlugin(plugin, gatewayDir, targetId, opts) {
 
   // 写入版本戳
   fs.writeFileSync(
-    path.join(pluginDir, `.oneclaw-${plugin.id}-stamp.json`),
+    path.join(pluginDir, `.RunJianClaw-${plugin.id}-stamp.json`),
     JSON.stringify({ source: sourceInfo.stampSource, bundledAt: new Date().toISOString() }, null, 2)
   );
   log(`已注入 ${plugin.id} 插件到 ${path.relative(ROOT, pluginDir)}`);
@@ -1594,7 +1594,7 @@ async function bundlePlugin(plugin, gatewayDir, targetId, opts) {
 
   const stamp = { source: source.sourceLabel, bundledAt: new Date().toISOString() };
   fs.writeFileSync(
-    path.join(pluginDir, `.oneclaw-${plugin.id}-stamp.json`),
+    path.join(pluginDir, `.RunJianClaw-${plugin.id}-stamp.json`),
     JSON.stringify(stamp, null, 2)
   );
   log(`已注入 ${plugin.id} 插件到 ${path.relative(ROOT, pluginDir)}`);
@@ -1752,7 +1752,7 @@ function pruneNodeModules(nmDir, platform) {
     walkDocs(openclawDocsDir);
   }
 
-  // openclaw/extensions 不再整目录豁免，只保留 OneClaw 需要的插件。
+  // openclaw/extensions 不再整目录豁免，只保留 RunJianClaw 需要的插件。
   function pruneOpenclawExtensions() {
     if (!fs.existsSync(openclawExtensionsDir)) return;
 
@@ -2124,7 +2124,7 @@ async function main() {
 
   console.log();
 
-  // Step 6: Gateway ASAR 打包（--asar 或 ONECLAW_GATEWAY_ASAR=1 时启用）
+  // Step 6: Gateway ASAR 打包（--asar 或 RunJianClaw_GATEWAY_ASAR=1 时启用）
   if (opts.asar) {
     log("Step 6: Gateway ASAR 打包");
     await packGatewayAsar(targetPaths.gatewayDir, targetPaths.targetBase, opts.platform, opts.arch);

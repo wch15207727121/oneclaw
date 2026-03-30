@@ -31,7 +31,7 @@ function resolveArchName(arch) {
 
 // 计算当前 afterPack 对应的目标 ID
 function resolveTargetId(context) {
-  const fromEnv = process.env.ONECLAW_TARGET;
+  const fromEnv = process.env.RunJianClaw_TARGET;
   if (fromEnv) return fromEnv;
   const platform = context.electronPlatformName;
   const arch = resolveArchName(context.arch);

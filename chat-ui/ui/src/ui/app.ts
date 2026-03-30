@@ -112,14 +112,14 @@ type SharePromptStore = {
   shownVersions: number[];
 };
 
-type OneClawUpdateState = {
+type RunJianClawUpdateState = {
   status: "hidden" | "available" | "downloading";
   version: string | null;
   percent: number | null;
   showBadge: boolean;
 };
 
-type OneClawPairingRequest = {
+type RunJianClawPairingRequest = {
   channel: string;
   code: string;
   id: string;
@@ -128,25 +128,25 @@ type OneClawPairingRequest = {
   lastSeenAt: string;
 };
 
-type OneClawPairingChannelState = {
+type RunJianClawPairingChannelState = {
   channel: string;
   pendingCount: number;
-  requests: OneClawPairingRequest[];
+  requests: RunJianClawPairingRequest[];
   updatedAt: number;
   lastAutoApprovedAt: number | null;
   lastAutoApprovedName: string | null;
 };
 
-type OneClawIpcResult = {
+type RunJianClawIpcResult = {
   success?: boolean;
   message?: string;
 };
 
-type OneClawPairingState = {
+type RunJianClawPairingState = {
   pendingCount: number;
-  requests: OneClawPairingRequest[];
+  requests: RunJianClawPairingRequest[];
   updatedAt: number;
-  channels: Record<string, OneClawPairingChannelState>;
+  channels: Record<string, RunJianClawPairingChannelState>;
 };
 
 type ReleaseNotesData = {
@@ -155,29 +155,29 @@ type ReleaseNotesData = {
   locale: string;
 };
 
-type OneClawBridge = {
+type RunJianClawBridge = {
   onNavigate?: (cb: (payload: { view: "settings" }) => void) => (() => void) | void;
-  onUpdateState?: (cb: (payload: OneClawUpdateState) => void) => (() => void) | void;
-  getUpdateState?: () => Promise<OneClawUpdateState>;
+  onUpdateState?: (cb: (payload: RunJianClawUpdateState) => void) => (() => void) | void;
+  getUpdateState?: () => Promise<RunJianClawUpdateState>;
   onPairingState?: (
-    cb: (payload: OneClawPairingState) => void,
+    cb: (payload: RunJianClawPairingState) => void,
   ) => (() => void) | void;
-  getPairingState?: () => Promise<OneClawPairingState>;
+  getPairingState?: () => Promise<RunJianClawPairingState>;
   refreshPairingState?: () => void;
   getReleaseNotes?: () => Promise<ReleaseNotesData | null>;
   dismissReleaseNotes?: (version: string) => Promise<void>;
   settingsApproveFeishuPairing?: (
     params: { code: string; id?: string; name?: string },
-  ) => Promise<OneClawIpcResult>;
+  ) => Promise<RunJianClawIpcResult>;
   settingsRejectFeishuPairing?: (
     params: { code: string; id?: string; name?: string },
-  ) => Promise<OneClawIpcResult>;
+  ) => Promise<RunJianClawIpcResult>;
   settingsApproveWecomPairing?: (
     params: { code: string; id?: string; name?: string },
-  ) => Promise<OneClawIpcResult>;
+  ) => Promise<RunJianClawIpcResult>;
   settingsRejectWecomPairing?: (
     params: { code: string; id?: string; name?: string },
-  ) => Promise<OneClawIpcResult>;
+  ) => Promise<RunJianClawIpcResult>;
 };
 
 const SHARE_PROMPT_STORE_KEY = "openclaw.share.prompt.v1";
@@ -662,13 +662,13 @@ export class OpenClawApp extends LitElement {
   sharePromptSubtitle = t("sharePrompt.subtitle");
   sharePromptText = "";
   sharePromptVersion: number | null = null;
-  updateBannerState: OneClawUpdateState = {
+  updateBannerState: RunJianClawUpdateState = {
     status: "hidden",
     version: null,
     percent: null,
     showBadge: false,
   };
-  pairingState: OneClawPairingState = {
+  pairingState: RunJianClawPairingState = {
     pendingCount: 0,
     requests: [],
     updatedAt: Date.now(),
@@ -716,7 +716,7 @@ export class OpenClawApp extends LitElement {
 
   // 首屏拉取更新日志，有未展示的条目时弹出 modal。
   private fetchReleaseNotes() {
-    const bridge = this.getOneClawBridge();
+    const bridge = this.getRunJianClawBridge();
     void bridge?.getReleaseNotes?.().then((data) => {
       if (data && Array.isArray(data.entries) && data.entries.length > 0) {
         this.releaseNotesData = data;
@@ -798,12 +798,12 @@ export class OpenClawApp extends LitElement {
   }
 
   // 统一读取 preload 暴露的 bridge，避免在多个方法里重复类型断言。
-  private getOneClawBridge(): OneClawBridge | undefined {
-    return (window as unknown as { oneclaw?: OneClawBridge }).oneclaw;
+  private getRunJianClawBridge(): RunJianClawBridge | undefined {
+    return (window as unknown as { RunJianClaw?: RunJianClawBridge }).RunJianClaw;
   }
 
   // 规范化更新状态 payload，保证渲染层只消费合法值。
-  private applyUpdateBannerState(payload: OneClawUpdateState | null | undefined) {
+  private applyUpdateBannerState(payload: RunJianClawUpdateState | null | undefined) {
     const nextStatus = payload?.status;
     if (nextStatus !== "hidden" && nextStatus !== "available" && nextStatus !== "downloading") {
       return;
@@ -821,9 +821,9 @@ export class OpenClawApp extends LitElement {
   }
 
   // 规范化渠道配对状态，避免渲染层处理空值或脏数据。
-  private applyPairingState(payload: OneClawPairingState | null | undefined) {
+  private applyPairingState(payload: RunJianClawPairingState | null | undefined) {
     const rawRequests = Array.isArray(payload?.requests) ? payload.requests : [];
-    const requests: OneClawPairingRequest[] = rawRequests
+    const requests: RunJianClawPairingRequest[] = rawRequests
       .map((item) => ({
         channel: String(item?.channel ?? "").trim().toLowerCase(),
         code: String(item?.code ?? "").trim(),
@@ -845,7 +845,7 @@ export class OpenClawApp extends LitElement {
     const channels = Object.fromEntries(
       Object.entries(rawChannels).map(([channel, item]) => {
         const channelRequests = Array.isArray(item?.requests) ? item.requests : [];
-        const normalizedRequests: OneClawPairingRequest[] = channelRequests
+        const normalizedRequests: RunJianClawPairingRequest[] = channelRequests
           .map((request) => ({
             channel,
             code: String(request?.code ?? "").trim(),
@@ -878,7 +878,7 @@ export class OpenClawApp extends LitElement {
           lastAutoApprovedName,
         }];
       })
-    ) as Record<string, OneClawPairingChannelState>;
+    ) as Record<string, RunJianClawPairingChannelState>;
 
     this.pairingState = {
       pendingCount: Math.max(pendingCount, requests.length),
@@ -893,7 +893,7 @@ export class OpenClawApp extends LitElement {
     if (this.updateStateCleanup) {
       return;
     }
-    const bridge = this.getOneClawBridge();
+    const bridge = this.getRunJianClawBridge();
     if (bridge?.onUpdateState) {
       const unsubscribe = bridge.onUpdateState((payload) => this.applyUpdateBannerState(payload));
       this.updateStateCleanup = typeof unsubscribe === "function" ? unsubscribe : null;
@@ -910,7 +910,7 @@ export class OpenClawApp extends LitElement {
   // 主进程通知 gateway 已就绪，立即重连（跳过指数退避盲等）
   private bindGatewayReady() {
     if (this.gatewayReadyCleanup) return;
-    const bridge = this.getOneClawBridge();
+    const bridge = this.getRunJianClawBridge();
     if (bridge?.onGatewayReady) {
       const unsubscribe = bridge.onGatewayReady(() => {
         if (!this.connected && this.client) {
@@ -926,7 +926,7 @@ export class OpenClawApp extends LitElement {
     if (this.pairingStateCleanup) {
       return;
     }
-    const bridge = this.getOneClawBridge();
+    const bridge = this.getRunJianClawBridge();
     if (bridge?.onPairingState) {
       const unsubscribe = bridge.onPairingState((payload) => this.applyPairingState(payload));
       this.pairingStateCleanup = typeof unsubscribe === "function" ? unsubscribe : null;
@@ -941,7 +941,7 @@ export class OpenClawApp extends LitElement {
   }
 
   // 返回当前首条待审批请求，供快捷批准/拒绝入口复用。
-  private getFirstPendingPairing(): OneClawPairingRequest | null {
+  private getFirstPendingPairing(): RunJianClawPairingRequest | null {
     return this.pairingState.requests[0] ?? null;
   }
 
@@ -954,7 +954,7 @@ export class OpenClawApp extends LitElement {
     if (!target?.code) {
       return;
     }
-    const bridge = this.getOneClawBridge();
+    const bridge = this.getRunJianClawBridge();
     const approve = target.channel === "wecom"
       ? bridge?.settingsApproveWecomPairing
       : bridge?.settingsApproveFeishuPairing;
@@ -990,7 +990,7 @@ export class OpenClawApp extends LitElement {
     if (!target?.code) {
       return;
     }
-    const bridge = this.getOneClawBridge();
+    const bridge = this.getRunJianClawBridge();
     const reject = target.channel === "wecom"
       ? bridge?.settingsRejectWecomPairing
       : bridge?.settingsRejectFeishuPairing;
@@ -1033,7 +1033,7 @@ export class OpenClawApp extends LitElement {
     if (this.appNavigateCleanup) {
       return;
     }
-    const bridge = this.getOneClawBridge();
+    const bridge = this.getRunJianClawBridge();
     if (!bridge?.onNavigate) {
       return;
     }
@@ -1045,7 +1045,7 @@ export class OpenClawApp extends LitElement {
       this.settingsTabHint = this.pairingState.pendingCount > 0 ? "channels" : null;
       this.applySettings({
         ...this.settings,
-        oneclawView: "settings",
+        RunJianClawView: "settings",
         navCollapsed: false,
       });
     });
@@ -1082,12 +1082,12 @@ export class OpenClawApp extends LitElement {
   // 从 preload 加载已配置的模型列表
   async loadConfiguredModels() {
     const w = window as Record<string, unknown>;
-    const oneclaw = w.oneclaw as Record<string, (...args: unknown[]) => Promise<unknown>> | undefined;
-    if (!oneclaw?.settingsGetConfiguredModels) {
+    const RunJianClaw = w.RunJianClaw as Record<string, (...args: unknown[]) => Promise<unknown>> | undefined;
+    if (!RunJianClaw?.settingsGetConfiguredModels) {
       return;
     }
     try {
-      const res = (await oneclaw.settingsGetConfiguredModels()) as { success?: boolean; data?: ConfiguredModel[] } | undefined;
+      const res = (await RunJianClaw.settingsGetConfiguredModels()) as { success?: boolean; data?: ConfiguredModel[] } | undefined;
       const models = res?.data;
       this.configuredModels = Array.isArray(models) ? models : [];
       // 没有手动选择时，默认选中 isDefault 的模型
@@ -1291,8 +1291,8 @@ export class OpenClawApp extends LitElement {
   // 从主进程拉取最新分享文案（主进程负责远端拉取与本地兜底）。
   private async fetchShareCopyPayload(): Promise<ShareCopyPayload | null> {
     const bridge = (window as unknown as {
-      oneclaw?: { settingsGetShareCopy?: () => Promise<unknown> };
-    }).oneclaw;
+      RunJianClaw?: { settingsGetShareCopy?: () => Promise<unknown> };
+    }).RunJianClaw;
     if (!bridge?.settingsGetShareCopy) {
       return null;
     }
@@ -1389,7 +1389,7 @@ export class OpenClawApp extends LitElement {
     this.showReleaseNotesModal = false;
     const version = this.releaseNotesData?.currentVersion;
     if (version) {
-      const bridge = this.getOneClawBridge();
+      const bridge = this.getRunJianClawBridge();
       void bridge?.dismissReleaseNotes?.(version).catch(() => {});
     }
   }

@@ -74,7 +74,7 @@ export function deleteOAuthToken(): void {
 
 function commonHeaders(): Record<string, string> {
   return {
-    "X-Msh-Platform": "oneclaw",
+    "X-Msh-Platform": "RunJianClaw",
     "X-Msh-Device-Name": os.hostname().replace(/[^\x20-\x7E]/g, ""),
     "X-Msh-Device-Model": `${os.type()} ${os.release()} ${os.arch()}`,
     "X-Msh-Os-Version": os.version?.() ?? os.release(),

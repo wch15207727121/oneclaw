@@ -9,7 +9,7 @@ import * as log from "./logger";
 
 // 反馈服务地址（构建时通过环境变量注入，回退到默认值）
 const FEEDBACK_URL =
-  process.env.ONECLAW_FEEDBACK_URL || "https://feedback.oneclaw.cn/api/v1/feedback";
+  process.env.RunJianClaw_FEEDBACK_URL || "https://feedback.RunJianClaw.cn/api/v1/feedback";
 
 // 反馈提交参数
 interface FeedbackParams {

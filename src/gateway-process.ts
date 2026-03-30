@@ -180,7 +180,7 @@ export class GatewayProcess {
         OPENCLAW_NO_RESPAWN: "1",
         OPENCLAW_LENIENT_CONFIG: "1",
         // 统一状态目录：Windows 上 HOME 和 USERPROFILE 可能指向不同路径，
-        // OneClaw 用 USERPROFILE 写配置，openclaw 用 HOME 优先读配置，
+        // RunJianClaw 用 USERPROFILE 写配置，openclaw 用 HOME 优先读配置，
         // 显式传入 OPENCLAW_STATE_DIR 消除歧义。
         OPENCLAW_STATE_DIR: resolveUserStateDir(),
         // 告诉 openclaw 安装根目录，使 extensions 路径解析不依赖 __dirname（asar 内会失败）
@@ -476,7 +476,7 @@ function ensureClawhubWrapper(nodeBin: string): void {
   if (IS_WIN) {
     const wrapper = [
       "@echo off",
-      "REM OneClaw clawhub CLI - auto-generated, do not edit",
+      "REM RunJianClaw clawhub CLI - auto-generated, do not edit",
       "setlocal",
       `set "APP_NODE=${nodeBin.replace(/"/g, '""')}"`,
       `set "APP_ENTRY=${clawhubEntry.replace(/"/g, '""')}"`,
@@ -493,7 +493,7 @@ function ensureClawhubWrapper(nodeBin: string): void {
     const safeWorkdir = workdir.replace(/(["\\$`])/g, "\\$1");
     const wrapper = [
       "#!/usr/bin/env bash",
-      "# OneClaw clawhub CLI - auto-generated, do not edit",
+      "# RunJianClaw clawhub CLI - auto-generated, do not edit",
       `APP_NODE="${safeNode}"`,
       `APP_ENTRY="${safeEntry}"`,
       `APP_WORKDIR="${safeWorkdir}"`,

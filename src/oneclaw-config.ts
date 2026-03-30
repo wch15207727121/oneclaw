@@ -5,7 +5,7 @@ import { resolveUserStateDir, resolveUserConfigPath } from "./constants";
 
 // ── 类型定义 ──
 
-export interface OneclawConfig {
+export interface RunJianClawConfig {
   setupCompletedAt?: string;
   cliPreference?: "installed" | "uninstalled";
   updateChannel?: "stable" | "dev";
@@ -17,16 +17,16 @@ export interface OneclawConfig {
 
 // 四种归属状态
 export type OwnershipState =
-  | "oneclaw"
-  | "legacy-oneclaw"
+  | "RunJianClaw"
+  | "legacy-RunJianClaw"
   | "external-openclaw"
   | "fresh";
 
 // ── 路径 ──
 
-// OneClaw 专属配置文件路径
-export function resolveOneclawConfigPath(): string {
-  return path.join(resolveUserStateDir(), "oneclaw.config.json");
+// RunJianClaw 专属配置文件路径
+export function resolveRunJianClawConfigPath(): string {
+  return path.join(resolveUserStateDir(), "RunJianClaw.config.json");
 }
 
 // .device-id 文件路径（与官方 CLI 共用）
@@ -41,24 +41,24 @@ function resolveSkillStoreConfigPath(): string {
 
 // ── 读写 ──
 
-// 读取 OneClaw 专属配置，不存在或解析失败返回 null
-export function readOneclawConfig(): OneclawConfig | null {
+// 读取 RunJianClaw 专属配置，不存在或解析失败返回 null
+export function readRunJianClawConfig(): RunJianClawConfig | null {
   try {
-    const raw = fs.readFileSync(resolveOneclawConfigPath(), "utf-8");
+    const raw = fs.readFileSync(resolveRunJianClawConfigPath(), "utf-8");
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== "object") return null;
-    return parsed as OneclawConfig;
+    return parsed as RunJianClawConfig;
   } catch {
     return null;
   }
 }
 
-// 写入 OneClaw 专属配置
-export function writeOneclawConfig(config: OneclawConfig): void {
+// 写入 RunJianClaw 专属配置
+export function writeRunJianClawConfig(config: RunJianClawConfig): void {
   const dir = resolveUserStateDir();
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(
-    resolveOneclawConfigPath(),
+    resolveRunJianClawConfigPath(),
     JSON.stringify(config, null, 2) + "\n",
     "utf-8",
   );
@@ -66,8 +66,8 @@ export function writeOneclawConfig(config: OneclawConfig): void {
 
 // ── 归属检测 ──
 
-// 老版 OneClaw 独有文件：官方 CLI 不会创建 setup-baseline
-function hasLegacyOneclawMarker(): boolean {
+// 老版 RunJianClaw 独有文件：官方 CLI 不会创建 setup-baseline
+function hasLegacyRunJianClawMarker(): boolean {
   return fs.existsSync(
     path.join(resolveUserStateDir(), "openclaw-setup-baseline.json"),
   );
@@ -75,12 +75,12 @@ function hasLegacyOneclawMarker(): boolean {
 
 // 判定当前 ~/.openclaw/ 目录的归属状态
 export function detectOwnership(): OwnershipState {
-  const oneclawConfig = readOneclawConfig();
-  if (oneclawConfig?.setupCompletedAt) return "oneclaw";
+  const RunJianClawConfig = readRunJianClawConfig();
+  if (RunJianClawConfig?.setupCompletedAt) return "RunJianClaw";
 
-  // 老版 OneClaw 没有 oneclaw.config.json，但会创建这些独有文件
+  // 老版 RunJianClaw 没有 RunJianClaw.config.json，但会创建这些独有文件
   // （.device-id 和 wizard.lastRunAt 不可靠：官方 CLI 也会创建）
-  if (hasLegacyOneclawMarker()) return "legacy-oneclaw";
+  if (hasLegacyRunJianClawMarker()) return "legacy-RunJianClaw";
 
   const openclawJsonExists = fs.existsSync(resolveUserConfigPath());
   if (openclawJsonExists) return "external-openclaw";
@@ -90,8 +90,8 @@ export function detectOwnership(): OwnershipState {
 
 // ── 迁移 ──
 
-// 从 legacy 文件迁移到 oneclaw.config.json（老 OneClaw 用户升级）
-export function migrateFromLegacy(): OneclawConfig {
+// 从 legacy 文件迁移到 RunJianClaw.config.json（老 RunJianClaw 用户升级）
+export function migrateFromLegacy(): RunJianClawConfig {
   // 读取 wizard.lastRunAt
   let setupCompletedAt: string | undefined;
   try {
@@ -103,7 +103,7 @@ export function migrateFromLegacy(): OneclawConfig {
   } catch {}
 
   // 读取 skill-store.json
-  let skillStore: OneclawConfig["skillStore"];
+  let skillStore: RunJianClawConfig["skillStore"];
   const skillStorePath = resolveSkillStoreConfigPath();
   try {
     const raw = JSON.parse(fs.readFileSync(skillStorePath, "utf-8"));
@@ -112,21 +112,21 @@ export function migrateFromLegacy(): OneclawConfig {
     }
   } catch {}
 
-  const config: OneclawConfig = { setupCompletedAt, skillStore };
-  writeOneclawConfig(config);
+  const config: RunJianClawConfig = { setupCompletedAt, skillStore };
+  writeRunJianClawConfig(config);
   return config;
 }
 
 // ── 便捷方法 ──
 
-// 标记 Setup 完成（写入 setupCompletedAt 到 oneclaw.config.json）
+// 标记 Setup 完成（写入 setupCompletedAt 到 RunJianClaw.config.json）
 export function markSetupComplete(): void {
-  let config = readOneclawConfig();
+  let config = readRunJianClawConfig();
   if (!config) {
     config = {};
   }
   config.setupCompletedAt = new Date().toISOString();
-  writeOneclawConfig(config);
+  writeRunJianClawConfig(config);
 }
 
 // 确保 deviceId 存在，直接读写 .device-id 文件（与官方 CLI 共用）
