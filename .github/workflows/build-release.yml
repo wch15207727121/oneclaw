@@ -9,24 +9,35 @@ on:
   push:
     tags: ["v*"]
   pull_request:       # PR 触发构建验证（不发布）
-  workflow_dispatch:  # 允许在任意分支上手动触发构建（不发布）
+  workflow_dispatch:  # 允许在任意分支上手动触发构建
+    inputs:
+      create_release:
+        description: '创建 GitHub Release'
+        required: false
+        default: 'false'
+        type: boolean
+      version:
+        description: '版本号 (如 1.0.0)'
+        required: false
+        default: ''
+        type: string
 
-# openclaw 版本由 package.json RunJianClaw.openclaw 字段控制（git-tracked 单一事实来源）
+# openclaw 版本由 package.json oneclaw.openclaw 字段控制（git-tracked 单一事实来源）
 # 如需 CI 临时覆盖，取消下行注释：
 # OPENCLAW_PACKAGE_SOURCE: "2026.3.13"
 env:
-  RunJianClaw_CLAWHUB_REGISTRY: ${{ vars.RunJianClaw_CLAWHUB_REGISTRY }}
-  RunJianClaw_GATEWAY_ASAR: "1"
+  ONECLAW_CLAWHUB_REGISTRY: ${{ vars.ONECLAW_CLAWHUB_REGISTRY }}
+  ONECLAW_GATEWAY_ASAR: "1"
   ARTIFACT_RETENTION_DAYS: 3
   # 反馈服务
-  RunJianClaw_FEEDBACK_URL: ${{ secrets.RunJianClaw_FEEDBACK_URL }}
+  ONECLAW_FEEDBACK_URL: ${{ secrets.ONECLAW_FEEDBACK_URL }}
   # 埋点配置
-  RunJianClaw_ANALYTICS_API_KEY: ${{ secrets.RunJianClaw_ANALYTICS_API_KEY }}
-  RunJianClaw_ANALYTICS_CAPTURE_URL: ${{ secrets.RunJianClaw_ANALYTICS_CAPTURE_URL }}
-  RunJianClaw_ANALYTICS_CAPTURE_FALLBACK_URL: ${{ secrets.RunJianClaw_ANALYTICS_CAPTURE_FALLBACK_URL }}
+  ONECLAW_ANALYTICS_API_KEY: ${{ secrets.ONECLAW_ANALYTICS_API_KEY }}
+  ONECLAW_ANALYTICS_CAPTURE_URL: ${{ secrets.ONECLAW_ANALYTICS_CAPTURE_URL }}
+  ONECLAW_ANALYTICS_CAPTURE_FALLBACK_URL: ${{ secrets.ONECLAW_ANALYTICS_CAPTURE_FALLBACK_URL }}
   # 火山引擎 TOS（S3 协议 + 传输加速）+ CDN
   TOS_ENDPOINT: https://tos-s3-accelerate.volces.com
-  TOS_BUCKET: RunJianClaw-cn
+  TOS_BUCKET: oneclaw-cn
   AWS_ACCESS_KEY_ID: ${{ secrets.VOLCENGINE_ACCESS_KEY }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.VOLCENGINE_SECRET_KEY }}
   AWS_DEFAULT_REGION: cn-beijing
@@ -47,9 +58,14 @@ jobs:
       - run: npm ci
 
       # 从 git tag 提取版本号写入 package.json（非 tag 触发时跳过，保持 0.0.0-dev）
+      # 手动触发时使用 inputs.version（如果提供）
       - name: 注入版本号
         if: startsWith(github.ref, 'refs/tags/v')
         run: npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version --allow-same-version
+
+      - name: 注入版本号（手动）
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
+        run: npm version "${{ github.event.inputs.version }}" --no-git-tag-version --allow-same-version
 
       # TypeScript 编译（dist:* 脚本不含 tsc）
       - run: npm run build
@@ -81,7 +97,7 @@ jobs:
       # APPLE_API_KEY 必须是 .p8 文件路径（notarytool --key 要求），不是文件内容
       - name: 构建 macOS arm64
         env:
-          RunJianClaw_MAC_SIGN_AND_NOTARIZE: "true"
+          ONECLAW_MAC_SIGN_AND_NOTARIZE: "true"
           CSC_NAME: ${{ secrets.CSC_NAME }}
           CSC_KEYCHAIN: build.keychain
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
@@ -118,6 +134,10 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         run: npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version --allow-same-version
 
+      - name: 注入版本号（手动）
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
+        run: npm version "${{ github.event.inputs.version }}" --no-git-tag-version --allow-same-version
+
       - run: npm run build
 
       - name: 导入 macOS 签名证书
@@ -143,7 +163,7 @@ jobs:
 
       - name: 构建 macOS x64
         env:
-          RunJianClaw_MAC_SIGN_AND_NOTARIZE: "true"
+          ONECLAW_MAC_SIGN_AND_NOTARIZE: "true"
           CSC_NAME: ${{ secrets.CSC_NAME }}
           CSC_KEYCHAIN: build.keychain
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
@@ -183,6 +203,10 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         run: npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version --allow-same-version
 
+      - name: 注入版本号（手动）
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
+        run: npm version "${{ github.event.inputs.version }}" --no-git-tag-version --allow-same-version
+
       - run: npm run build
 
       # npm 在 Windows 默认用 cmd.exe 跑 scripts，package.json 里的 ENV=val 语法是 bash 专属
@@ -192,8 +216,8 @@ jobs:
       - name: 构建 Windows x64
         env:
           # Windows 上 kimi-claw 0.20.x 的 flock/ftruncate 有兼容性问题，锁定 0.19.1
-          RunJianClaw_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
-          RunJianClaw_KIMI_CLAW_REFRESH: "true"
+          ONECLAW_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
+          ONECLAW_KIMI_CLAW_REFRESH: "true"
         run: npm run dist:win:x64
 
       - name: 清理 blockmap（Windows x64）
@@ -226,6 +250,10 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         run: npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version --allow-same-version
 
+      - name: 注入版本号（手动）
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
+        run: npm version "${{ github.event.inputs.version }}" --no-git-tag-version --allow-same-version
+
       - run: npm run build
 
       # npm 在 Windows 默认用 cmd.exe 跑 scripts
@@ -234,8 +262,8 @@ jobs:
 
       - name: 构建 Windows arm64
         env:
-          RunJianClaw_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
-          RunJianClaw_KIMI_CLAW_REFRESH: "true"
+          ONECLAW_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
+          ONECLAW_KIMI_CLAW_REFRESH: "true"
         run: npm run dist:win:arm64
 
       - name: 清理 blockmap（Windows arm64）
@@ -251,7 +279,7 @@ jobs:
 
   # ── 合并 + 上传 TOS + 刷新 CDN + 创建 GitHub Release ──
   release:
-    if: github.event_name == 'push'  # 仅 tag 推送时发布，手动触发只构建不发布
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true')
     needs: [build-mac-arm64, build-mac-x64, build-win-x64, build-win-arm64]
     runs-on: ubuntu-latest
     permissions:
@@ -296,7 +324,7 @@ jobs:
 
       # 生成 dev 通道 yml（复用同一批二进制，仅文件名不同）
       # electron-updater channel="dev" 会拉取 dev-mac.yml / dev.yml
-      # 客户端切换: ~/.openclaw/RunJianClaw.config.json 设置 "updateChannel": "dev"
+      # 客户端切换: ~/.openclaw/oneclaw.config.json 设置 "updateChannel": "dev"
       - name: 生成 dev 通道 yml
         run: |
           for src in out/release/latest-mac.yml out/release/latest.yml; do
@@ -322,8 +350,8 @@ jobs:
         continue-on-error: true
         run: |
           node scripts/volcengine-cdn-refresh.js \
-            "https://RunJianClaw.cn/releases/dev-mac.yml" \
-            "https://RunJianClaw.cn/releases/dev.yml"
+            "https://oneclaw.cn/releases/dev-mac.yml" \
+            "https://oneclaw.cn/releases/dev.yml"
           echo "dev 通道 CDN 缓存刷新已提交"
 
       # dev yml 已上传 TOS + 刷新 CDN，从 release 目录移除，不打入 GitHub Release asset
