@@ -7,7 +7,7 @@ name: Publish Release
 on:
   release:
     types: [published]
-    workflow_dispatch:  # 允许在任意分支上手动触发构建（不发布）
+  workflow_dispatch:  # 允许在任意分支上手动触发构建（不发布）
 
 env:
   CDN_DOMAIN: RunJianClaw.cn
