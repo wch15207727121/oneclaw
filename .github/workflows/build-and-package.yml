@@ -70,14 +70,14 @@ jobs:
 
       - name: Package resources
         env:
-          ONECLAW_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
-          ONECLAW_KIMI_CLAW_REFRESH: "true"
+          RunJianClaw_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
+          RunJianClaw_KIMI_CLAW_REFRESH: "true"
         run: npm run package:resources -- --platform win32 --arch x64
 
       - name: Build Windows x64
         env:
-          ONECLAW_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
-          ONECLAW_KIMI_CLAW_REFRESH: "true"
+          RunJianClaw_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
+          RunJianClaw_KIMI_CLAW_REFRESH: "true"
         run: npm run dist:win:x64
 
       - name: 清理 blockmap
@@ -122,14 +122,14 @@ jobs:
 
       - name: Package resources
         env:
-          ONECLAW_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
-          ONECLAW_KIMI_CLAW_REFRESH: "true"
+          RunJianClaw_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
+          RunJianClaw_KIMI_CLAW_REFRESH: "true"
         run: npm run package:resources -- --platform win32 --arch arm64
 
       - name: Build Windows arm64
         env:
-          ONECLAW_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
-          ONECLAW_KIMI_CLAW_REFRESH: "true"
+          RunJianClaw_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
+          RunJianClaw_KIMI_CLAW_REFRESH: "true"
         run: npm run dist:win:arm64
 
       - name: 清理 blockmap
@@ -168,14 +168,14 @@ jobs:
 
       - name: Package resources
         env:
-          ONECLAW_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
-          ONECLAW_KIMI_CLAW_REFRESH: "true"
+          RunJianClaw_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
+          RunJianClaw_KIMI_CLAW_REFRESH: "true"
         run: npm run package:resources -- --platform darwin --arch arm64
 
       - name: Build macOS arm64
         env:
-          ONECLAW_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
-          ONECLAW_KIMI_CLAW_REFRESH: "true"
+          RunJianClaw_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
+          RunJianClaw_KIMI_CLAW_REFRESH: "true"
         run: npm run dist:mac:arm64
 
       - name: 清理 blockmap
@@ -215,14 +215,14 @@ jobs:
 
       - name: Package resources
         env:
-          ONECLAW_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
-          ONECLAW_KIMI_CLAW_REFRESH: "true"
+          RunJianClaw_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
+          RunJianClaw_KIMI_CLAW_REFRESH: "true"
         run: npm run package:resources -- --platform darwin --arch x64
 
       - name: Build macOS x64
         env:
-          ONECLAW_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
-          ONECLAW_KIMI_CLAW_REFRESH: "true"
+          RunJianClaw_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
+          RunJianClaw_KIMI_CLAW_REFRESH: "true"
         run: npm run dist:mac:x64
 
       - name: 清理 blockmap

@@ -1197,13 +1197,10 @@ const OPENCLAW_EXTENSION_ALLOWLIST = new Set([
   "openclaw-weixin",
 ]);
 
-// 构建产物校验需要覆盖白名单中的关键扩展，避免悄悄打出残缺包。
+// 构建产物校验只强校验 RunJianClaw 主动注入的扩展。
+// openclaw 内置扩展（如 shared/memory-core/device-pair/feishu/imessage）可能随上游版本调整，
+// 不应导致打包流程直接失败。
 const REQUIRED_OPENCLAW_EXTENSION_OUTPUTS = [
-  "shared",
-  path.join("memory-core", "openclaw.plugin.json"),
-  path.join("device-pair", "openclaw.plugin.json"),
-  path.join("feishu", "openclaw.plugin.json"),
-  path.join("imessage", "openclaw.plugin.json"),
   path.join("kimi-claw", "openclaw.plugin.json"),
   path.join("kimi-search", "openclaw.plugin.json"),
   path.join("qqbot", "openclaw.plugin.json"),
