@@ -1,0 +1,238 @@
+# 构建和打包工作流
+# 支持手动触发和 PR 触发，为不同平台生成安装包
+
+name: Build & Package
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号 (如 1.0.0)'
+        required: false
+        default: ''
+        type: string
+
+env:
+  NODE_VERSION: '22'
+  ARTIFACT_RETENTION_DAYS: 7
+
+jobs:
+  # ── 构建验证（所有平台共用） ──
+  build-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+  # ── Windows x64 构建 ──
+  build-win-x64:
+    needs: build-validate
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: 注入版本号（手动）
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
+        run: npm version "${{ github.event.inputs.version }}" --no-git-tag-version --allow-same-version
+
+      - name: Build
+        run: npm run build
+
+      - name: 让 npm 通过 bash 执行 scripts
+        run: npm config set script-shell "$(which bash)"
+
+      - name: Package resources
+        env:
+          ONECLAW_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
+          ONECLAW_KIMI_CLAW_REFRESH: "true"
+        run: npm run package:resources -- --platform win32 --arch x64
+
+      - name: Build Windows x64
+        env:
+          ONECLAW_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
+          ONECLAW_KIMI_CLAW_REFRESH: "true"
+        run: npm run dist:win:x64
+
+      - name: 清理 blockmap
+        run: find out/win32-x64 -type f -name "*.blockmap" -delete
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: win-x64
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
+          path: |
+            out/win32-x64/*.exe
+            out/win32-x64/latest.yml
+
+  # ── Windows arm64 构建 ──
+  build-win-arm64:
+    needs: build-validate
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: 注入版本号（手动）
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
+        run: npm version "${{ github.event.inputs.version }}" --no-git-tag-version --allow-same-version
+
+      - name: Build
+        run: npm run build
+
+      - name: 让 npm 通过 bash 执行 scripts
+        run: npm config set script-shell "$(which bash)"
+
+      - name: Package resources
+        env:
+          ONECLAW_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
+          ONECLAW_KIMI_CLAW_REFRESH: "true"
+        run: npm run package:resources -- --platform win32 --arch arm64
+
+      - name: Build Windows arm64
+        env:
+          ONECLAW_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
+          ONECLAW_KIMI_CLAW_REFRESH: "true"
+        run: npm run dist:win:arm64
+
+      - name: 清理 blockmap
+        run: find out/win32-arm64 -type f -name "*.blockmap" -delete
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: win-arm64
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
+          path: |
+            out/win32-arm64/*.exe
+            out/win32-arm64/latest.yml
+
+  # ── macOS arm64 构建 ──
+  build-mac-arm64:
+    needs: build-validate
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: 注入版本号（手动）
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
+        run: npm version "${{ github.event.inputs.version }}" --no-git-tag-version --allow-same-version
+
+      - name: Build
+        run: npm run build
+
+      - name: Package resources
+        env:
+          ONECLAW_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
+          ONECLAW_KIMI_CLAW_REFRESH: "true"
+        run: npm run package:resources -- --platform darwin --arch arm64
+
+      - name: Build macOS arm64
+        env:
+          ONECLAW_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
+          ONECLAW_KIMI_CLAW_REFRESH: "true"
+        run: npm run dist:mac:arm64
+
+      - name: 清理 blockmap
+        run: find out/darwin-arm64 -type f -name "*.blockmap" -delete
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: mac-arm64
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
+          path: |
+            out/darwin-arm64/*.dmg
+            out/darwin-arm64/*.zip
+            out/darwin-arm64/latest-mac.yml
+
+  # ── macOS x64 构建 ──
+  build-mac-x64:
+    needs: build-validate
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: 注入版本号（手动）
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
+        run: npm version "${{ github.event.inputs.version }}" --no-git-tag-version --allow-same-version
+
+      - name: Build
+        run: npm run build
+
+      - name: Package resources
+        env:
+          ONECLAW_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
+          ONECLAW_KIMI_CLAW_REFRESH: "true"
+        run: npm run package:resources -- --platform darwin --arch x64
+
+      - name: Build macOS x64
+        env:
+          ONECLAW_KIMI_CLAW_TGZ_URL: https://cdn.kimi.com/kimi-claw/kimi-claw-0.19.1.tgz
+          ONECLAW_KIMI_CLAW_REFRESH: "true"
+        run: npm run dist:mac:x64
+
+      - name: 清理 blockmap
+        run: find out/darwin-x64 -type f -name "*.blockmap" -delete
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: mac-x64
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
+          path: |
+            out/darwin-x64/*.dmg
+            out/darwin-x64/*.zip
+            out/darwin-x64/latest-mac.yml
